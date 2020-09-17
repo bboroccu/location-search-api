@@ -1,0 +1,7 @@
+pluginManagement {
+    repositories {
+        maven {
+            url 'http://nexus.yanolja.in/repository/maven-public/'
+        }
+    }
+}

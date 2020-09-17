@@ -1,0 +1,106 @@
+plugins {
+    id 'org.springframework.boot' version "${springbootVersion}" apply false
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+apply plugin: "java-library"
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+group = 'com.kakaobank'
+version = '1.0.1-SNAPSHOT'
+
+description = """location-search-api"""
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/plugins-release" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version: "${springbootVersion}"
+    testRuntimeOnly group: "org.junit.platform", name: "junit-platform-launcher", version: "1.4.2"
+
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter", version: "${junitJupiterVersion}"
+    testImplementation group: "org.junit.vintage", name: "junit-vintage-engine", version: "${junitJupiterVersion}"
+    testImplementation group: "org.mockito", name: "mockito-junit-jupiter", version: "2.28.2"
+    testImplementation group: "org.codehaus.groovy", name: "groovy-test"
+    testImplementation group: "org.spockframework", name: "spock-core", version: "${spockVersion}"
+    testImplementation group: "org.spockframework", name: "spock-spring", version: "${spockVersion}"
+
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-web", version: "${springbootVersion}"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: "${springbootVersion}"
+
+    implementation group: "org.springframework.boot", name:"spring-boot-starter-security", version: "${springbootVersion}"
+    implementation group: "org.springframework.boot", name:"spring-boot-configuration-processor", version: "${springbootVersion}"
+    implementation(group: "org.springframework.boot", name: "spring-boot-starter", version: "${springbootVersion}") {
+        exclude(module: "logback-classic")
+    }
+
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-aop", version: "${springbootVersion}"
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-data-jpa", version: "${springbootVersion}"
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-jdbc", version: "${springbootVersion}"
+
+    compileOnly group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+    annotationProcessor group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+
+    testCompileOnly group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+    testAnnotationProcessor group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+
+    //util
+    compile group: 'org.springframework.retry', name: 'spring-retry', version:'1.2.4.RELEASE'
+    implementation(group: "org.apache.httpcomponents", name: "httpclient", version:"4.5.3") {
+        exclude(module: "commons-logging")
+    }
+    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.7"
+    implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: "${jacksonVersion}"
+    implementation(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "${jacksonVersion}") {
+        exclude(module: "jackson-core")
+    }
+    implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "${jacksonVersion}"
+    implementation(group: "com.fasterxml.jackson.module", name: "jackson-module-afterburner", version: "${jacksonVersion}") {
+        exclude(module: "jackson-core")
+    }
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "${jacksonVersion}"
+    implementation group: "com.google.code.gson", name: "gson", version: "2.8.1"
+
+    //log
+    implementation group: "org.bgee.log4jdbc-log4j2", name: "log4jdbc-log4j2-jdbc4.1", version: "1.16"
+    implementation group: "net.logstash.logback", name: "logstash-logback-encoder", version: "5.2"
+    implementation(group: "ch.qos.logback", name: "logback-classic", version: "${logbackVersion}") {
+        exclude(module: "logback-core")
+    }
+    implementation group: "ch.qos.logback", name: "logback-core", version: "${logbackVersion}"
+    implementation group: "ch.qos.logback", name: "logback-access", version: "${logbackVersion}"
+    implementation group: "org.slf4j", name: "jul-to-slf4j", version: "1.7.25"
+    implementation group: "org.apache.logging.log4j", name: "log4j-core", version: "${slf4jVersion}"
+
+    //swagger
+    implementation(group: "io.springfox", name: "springfox-swagger2", version: "${springfoxswaggerVersion}") {
+        exclude(module: "swagger-models")
+    }
+    implementation group: "io.springfox", name: "springfox-swagger-ui", version: "${springfoxswaggerVersion}"
+    implementation(group: 'io.swagger', name: 'swagger-core', version:'1.5.21') {
+        exclude(module: 'jackson-core')
+    }
+
+    //db
+    implementation group: "com.h2database", name: "h2", version: "${h2dbVersion}"
+}
+
+springBoot {
+    buildInfo()
+}
+
+test {
+    useJUnitPlatform()
+}
