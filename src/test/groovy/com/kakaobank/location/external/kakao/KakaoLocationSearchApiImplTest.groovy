@@ -98,8 +98,8 @@ class KakaoLocationSearchApiImplTest extends Specification {
         Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
 
         then:
-        result.isPresent() == true
-        result.get().getDocuments().size() == 2
+        assert result.isPresent() == true
+        assert result.get().getDocuments().size() == 2
     }
 
     def "SearchKeyword, serverError"() {
@@ -127,7 +127,7 @@ class KakaoLocationSearchApiImplTest extends Specification {
         Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
 
         then:
-        result.isPresent() == false
+        assert result.isPresent() == false
     }
 
     def "SearchKeyword, clientError"() {
@@ -155,7 +155,7 @@ class KakaoLocationSearchApiImplTest extends Specification {
         Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
 
         then:
-        result.isPresent() == false
+        assert result.isPresent() == false
     }
 
     def "SearchKeyword, withUnauthorizedRequest"() {
@@ -183,6 +183,6 @@ class KakaoLocationSearchApiImplTest extends Specification {
         Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
 
         then:
-        result.isPresent() == false
+        assert result.isPresent() == false
     }
 }

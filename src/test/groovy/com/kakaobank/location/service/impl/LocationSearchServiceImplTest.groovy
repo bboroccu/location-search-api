@@ -6,14 +6,15 @@ import com.kakaobank.location.endpoint.SearchKeywordRequest
 import com.kakaobank.location.endpoint.SearchKeywordResponse
 import com.kakaobank.location.service.component.KakaoLocationSearcher
 import com.kakaobank.location.service.component.LocationSearcherManagerFactory
-import org.apache.commons.codec.digest.DigestUtils
+import org.springframework.context.ApplicationEventPublisher
 import spock.lang.Specification
 
 class LocationSearchServiceImplTest extends Specification {
     def locationSearchApiManagerFactory = Mock(LocationSearcherManagerFactory.class)
+    def applicationEventPublisher = Mock(ApplicationEventPublisher.class)
     def locationSearcher = Mock(KakaoLocationSearcher.class)
 
-    def sut = new LocationSearchServiceImpl(locationSearchApiManagerFactory)
+    def sut = new LocationSearchServiceImpl(locationSearchApiManagerFactory, applicationEventPublisher)
 
     def "searchLocation, success" () {
         given:
@@ -48,11 +49,12 @@ class LocationSearchServiceImplTest extends Specification {
         def actual = sut.searchLocation(searchKeywordRequest)
 
         then:
+        1 * applicationEventPublisher.publishEvent(_)
         1 * locationSearchApiManagerFactory.getLocationSearcher(_) >> locationSearcher
         1 * locationSearcher.toSearchProcess(_) >> searchKeywordResponse
 
-        actual.pageInfo.totalCount == searchKeywordResponse.pageInfo.totalCount
-        actual.pageInfo.totalPage == searchKeywordResponse.pageInfo.totalPage
+        assert actual.pageInfo.totalCount == searchKeywordResponse.pageInfo.totalCount
+        assert actual.pageInfo.totalPage == searchKeywordResponse.pageInfo.totalPage
     }
 
     def "searchLocation, empty" () {
@@ -71,10 +73,11 @@ class LocationSearchServiceImplTest extends Specification {
         def actual = sut.searchLocation(searchKeywordRequest)
 
         then:
+        1 * applicationEventPublisher.publishEvent(_)
         1 * locationSearchApiManagerFactory.getLocationSearcher(_) >> locationSearcher
         1 * locationSearcher.toSearchProcess(_) >> SearchKeywordResponse.empty()
 
-        actual.pageInfo.totalCount == searchKeywordResponse.pageInfo.totalCount
-        actual.pageInfo.totalPage == searchKeywordResponse.pageInfo.totalPage
+        assert actual.pageInfo.totalCount == searchKeywordResponse.pageInfo.totalCount
+        assert actual.pageInfo.totalPage == searchKeywordResponse.pageInfo.totalPage
     }
 }

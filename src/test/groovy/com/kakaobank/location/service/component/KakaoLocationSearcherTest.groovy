@@ -65,8 +65,8 @@ class KakaoLocationSearcherTest extends Specification {
         then:
         1 * locationSearchApi.searchKeyword(_) >> Optional.of(kakaoLocationSearchResponse)
 
-        actual.pageInfo.totalCount == 3
-        actual.pageInfo.totalPage == 2
+        assert actual.pageInfo.totalCount == 3
+        assert actual.pageInfo.totalPage == 2
     }
 
     def "ToSearchProcess, empty"() {
@@ -79,7 +79,7 @@ class KakaoLocationSearcherTest extends Specification {
         then:
         1 * locationSearchApi.searchKeyword(_) >> Optional.empty()
 
-        actual.pageInfo.totalCount == 0
-        actual.pageInfo.totalPage == 0
+        assert actual.pageInfo.totalCount == 0
+        assert actual.pageInfo.totalPage == 0
     }
 }

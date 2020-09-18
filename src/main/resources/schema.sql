@@ -23,4 +23,6 @@ CREATE TABLE keyword_rank
     primary key(seq)
 );
 
-CREATE INDEX IDX_COUNTING_DESC ON keyword_rank(counting DESC);
+CREATE INDEX idx_keyword ON keyword_rank(keyword);
+
+CREATE INDEX idx_counting_desc ON keyword_rank(counting DESC);
