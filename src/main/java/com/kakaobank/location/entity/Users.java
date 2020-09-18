@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 @Getter @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"passwd"})
+@ToString(exclude = {"password"})
 @DynamicUpdate
 public class Users {
     @Id
@@ -26,9 +26,9 @@ public class Users {
     @NotNull
     private String userId;
 
-    @Column(name = "passwd")
+    @Column(name = "password")
     @NotNull
-    private String passwd;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")

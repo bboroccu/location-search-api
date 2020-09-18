@@ -39,7 +39,7 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
         Users user = userService.getUserInfo(userId).orElseThrow(() -> new UsernameNotFoundException("User not found : " + userId));
         if (user.getUserRole() == null) throw new InsufficientAuthenticationException("User has no Roles Assigned.");
-        if (encoder.matches(password, user.getPasswd()))
+        if (encoder.matches(password, user.getPassword()))
             throw new UserpasswordNotMachExeption("Authentication Failed, Username or Password no valid.");
         List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().authority()));
         UserContext userContext = UserContext.create(user.getUserId(), authorities);

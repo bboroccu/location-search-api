@@ -1,4 +1,4 @@
-package com.kakaobank.location.endpoint;
+package com.kakaobank.location.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

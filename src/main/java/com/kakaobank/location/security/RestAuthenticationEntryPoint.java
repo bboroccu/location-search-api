@@ -22,6 +22,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        ExceptionResponse.CommonExecptionResponse(this.mapper, httpServletResponse, e);
+        ExceptionResponse.commonExceptionResponse(this.mapper, httpServletResponse, e);
     }
 }

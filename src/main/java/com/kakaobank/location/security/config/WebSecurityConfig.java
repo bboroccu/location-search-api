@@ -29,8 +29,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-
     @Autowired
     private RestAuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
@@ -80,8 +78,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 Constants.AUTHENTICATION_URL,
                 Constants.REFRESH_TOKEN_URL,
                 Constants.PASSWORD_INIT_URL + "/**",
-                Constants.ADMIN_API_ROOT + "/users",
-                Constants.APP_API_ROOT + "/users",
                 "/console"
         );
 

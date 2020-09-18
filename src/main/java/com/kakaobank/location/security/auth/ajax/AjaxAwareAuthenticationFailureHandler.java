@@ -23,6 +23,6 @@ public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFail
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        ExceptionResponse.CommonExecptionResponse(this.mapper, httpServletResponse, e);
+        ExceptionResponse.commonExceptionResponse(this.mapper, httpServletResponse, e);
     }
 }
