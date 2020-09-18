@@ -11,29 +11,23 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "keyword_rank")
 @Getter @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"password"})
+@ToString
 @DynamicUpdate
-public class Users {
+public class KeywordRank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seq")
     private Long seq;
 
-    @Column(name = "user_id")
+    @Column(name = "keyword")
     @NotNull
-    private String userId;
+    private String keyword;
 
-    @Column(name = "password")
-    @NotNull
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_role")
-    @NotNull
-    protected UserRole userRole;
+    @Column(name = "counting")
+    private Integer counting;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;

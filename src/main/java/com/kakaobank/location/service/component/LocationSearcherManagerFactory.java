@@ -1,7 +1,7 @@
-package com.kakaobank.location.external;
+package com.kakaobank.location.service.component;
 
-public interface LocationSearchApiManagerFactory {
-    LocationSearchApi getLocationSearchApi(String beanName);
+public interface LocationSearcherManagerFactory {
+    LocationSearcher getLocationSearcher(String beanName);
 
     enum SearchApiType {
         KAKAO_API("kakaoLocationSearchApi");

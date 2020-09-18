@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @Slf4j
-@Component("kakaoLocationSearchApi")
+@Component
 public class KakaoLocationSearchApiImpl implements LocationSearchApi<KakaoLocationSearchResponse> {
     @Value("${api.url-path.kakao-location-api.searchKeyword}")
     private String searchKeywordUrl;

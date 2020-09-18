@@ -3,8 +3,6 @@ api:
     kakao-location-api:
       searchKeyword: "%s/v2/local/search/keyword.%s"
       key: KakaoAK 2cb5f9f46d9df2d5792cda77ab1af39b
-    kakao-map-api:
-      url: "https://map.kakao.com/link/map/%s"
 
 spring:
   host:

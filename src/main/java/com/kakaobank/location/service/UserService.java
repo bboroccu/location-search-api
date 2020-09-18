@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<Users> getUserInfo(String userId);
+    String joinUser(JoinUserRequest joinUserRequest);
 }
