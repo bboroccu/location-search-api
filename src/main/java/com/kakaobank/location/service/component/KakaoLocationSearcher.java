@@ -57,6 +57,7 @@ public class KakaoLocationSearcher implements LocationSearcher {
         return LocationInfoResult.builder()
                 .locationId(kakaoLocationInfo.getId())
                 .placeName(kakaoLocationInfo.getPlaceName())
+                .phone(kakaoLocationInfo.getPhone())
                 .addressName(kakaoLocationInfo.getAddressName())
                 .roadAddressName(kakaoLocationInfo.getRoadAddressName())
                 .locationUrl(String.format(KAKAO_MAP_URL, kakaoLocationInfo.getId())).build();

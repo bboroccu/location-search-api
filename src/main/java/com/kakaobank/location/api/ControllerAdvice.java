@@ -1,4 +1,4 @@
-package com.kakaobank.location.controller;
+package com.kakaobank.location.api;
 
 import com.kakaobank.location.endpoint.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import static com.kakaobank.location.model.ErrorCode.INVALID_PARAMETER;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "com.kakaobank.location.controller")
+@RestControllerAdvice(basePackages = "com.kakaobank.location.api")
 public class ControllerAdvice {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

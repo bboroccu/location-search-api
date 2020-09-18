@@ -1,6 +1,6 @@
-package com.kakaobank.location.controller
+package com.kakaobank.location.api
 
-import com.kakaobank.location.endpoint.SearchKeywordResponse
+
 import com.kakaobank.location.service.LocationSearchService
 import com.kakaobank.location.util.Constants
 import org.springframework.http.MediaType

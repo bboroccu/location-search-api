@@ -1,4 +1,4 @@
-package com.kakaobank.location.controller;
+package com.kakaobank.location.api;
 
 import com.kakaobank.location.service.KeywordRankService;
 import org.springframework.beans.factory.annotation.Autowired;
