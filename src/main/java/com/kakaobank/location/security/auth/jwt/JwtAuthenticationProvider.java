@@ -5,7 +5,6 @@ import com.kakaobank.location.security.model.UserContext;
 import com.kakaobank.location.security.model.token.RawAccessJwtToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -27,7 +26,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         RawAccessJwtToken rawAccessJwtToken = (RawAccessJwtToken) authentication.getCredentials();
 
         Jws<Claims> jwsClaims = rawAccessJwtToken.parseClaims(jwtSettings.getTokenSigningKey());
@@ -41,14 +40,5 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
-    }
-
-    public String parseUserFromToken(String token) throws Exception {
-        String userId = Jwts.parser()
-                .setSigningKey(jwtSettings.getTokenSigningKey())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-        return userId;
     }
 }

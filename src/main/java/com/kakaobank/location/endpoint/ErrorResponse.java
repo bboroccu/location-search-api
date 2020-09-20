@@ -2,9 +2,6 @@ package com.kakaobank.location.endpoint;
 
 import com.kakaobank.location.model.ErrorCode;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
-
-import java.util.Date;
 
 @Getter
 public class ErrorResponse {

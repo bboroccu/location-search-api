@@ -12,7 +12,5 @@ public class KakaoLocationMetaInfo {
     @JsonProperty("is_end")
     private Boolean isEnd;
     @JsonProperty("pageable_count")
-    private Integer rowsPerPage;
-    @JsonProperty("total_count")
     private Integer totalCount;
 }

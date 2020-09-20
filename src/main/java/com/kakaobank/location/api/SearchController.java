@@ -1,6 +1,7 @@
 package com.kakaobank.location.api;
 
 import com.kakaobank.location.endpoint.SearchKeywordRequest;
+import com.kakaobank.location.endpoint.SearchKeywordResponse;
 import com.kakaobank.location.service.LocationSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class SearchController {
     }
 
     @GetMapping("/keyword")
-    public ResponseEntity searchLocationKeyword(
+    public ResponseEntity<SearchKeywordResponse> searchLocationKeyword(
             @Valid SearchKeywordRequest searchKeywordRequest
             ) {
         return ResponseEntity.ok(locationSearchService.searchLocation(searchKeywordRequest));

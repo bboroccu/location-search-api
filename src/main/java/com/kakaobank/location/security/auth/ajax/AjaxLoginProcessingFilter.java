@@ -2,9 +2,8 @@ package com.kakaobank.location.security.auth.ajax;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakaobank.location.security.exceptions.AuthMethodNotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
-    private static Logger logger = LoggerFactory.getLogger(AjaxLoginProcessingFilter.class);
 
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
@@ -36,10 +35,10 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         if (!HttpMethod.POST.name().equals(httpServletRequest.getMethod())) {
-            if (logger.isDebugEnabled())
-                logger.debug("Authentication method not supported. Request method : " + httpServletRequest.getMethod());
+            if (log.isDebugEnabled())
+                log.debug("Authentication method not supported. Request method : " + httpServletRequest.getMethod());
             throw new AuthMethodNotSupportedException("Authentication method not supported");
         }
         LoginRequest loginRequest = objectMapper.readValue(httpServletRequest.getReader(), LoginRequest.class);

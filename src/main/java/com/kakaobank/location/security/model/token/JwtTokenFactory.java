@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class JwtTokenFactory {
             throw new IllegalArgumentException("user doesn't have any privileages");
 
         Claims claims = Jwts.claims().setSubject(userContext.getUserId());
-        claims.put("scopes", userContext.getAuthorities().stream().map(s->s.toString()).collect(Collectors.toList()));
+        claims.put("scopes", userContext.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList()));
 
         LocalDateTime currentTime = LocalDateTime.now();
 

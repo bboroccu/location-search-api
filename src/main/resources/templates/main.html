@@ -6,13 +6,15 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
 	<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-<title>Spring Boot AngularJS example</title>
+	<script src="//lig-membres.imag.fr/donsez/cours/exemplescourstechnoweb/js_securehash/md5.js"></script>
+<title>Location Search Service</title>
 <script type="text/javascript">
             var app = angular.module("CustomerManagement", ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
             //Controller Part
             app.controller("CustomerController", function($scope, $http) {
                 $scope.locationInfos = [];
+                $scope.KeywordRankResults = [];
                 $scope.customerForm = {
                     userid : "",
                     password : ""
@@ -27,12 +29,13 @@
                 $scope.searchKeyword = {
                 	keyword : "",
 					page : 1,
-					rowsPerPage: 15
+					rowsPerPage: 10
 				};
 
 				$scope.bigTotalItems = 0;
-				$scope.bigCurrentPage = 1;
-				$scope.maxSize = 15;
+				$scope.bigCurrentPage = 0;
+				$scope.maxSize = 10;
+				$scope.itemsPerPage = 10;
 				$scope.setPage = function (pageNo) {
 					$scope.currentPage = pageNo;
 				};
@@ -50,34 +53,34 @@
                     var method = "";
                     var url = "";
                     if ($scope.authInfo.isLogin == false) {
-                        //Id is absent in form data, it is create new customer operation
-                        method = "POST";
-                        url = '/auth/login';
-                    }
-         
-                    $http({
-                        method : method,
-                        url : url,
-                        data : angular.toJson($scope.customerForm),
-                        headers : {
-                            'Content-Type' : 'application/json'
-                        }
-                    }).then(function successCallback(response) {
-                    	$scope.authInfo.isLogin = true;
-                    	$scope.authInfo.token = response.data.token;
-                    	$scope.authInfo.userid = response.data.userid;
-						console.log($scope.authInfo);
-					}, function errorCallback(response) {
-						console.log(response.statusText);
-					});
+						//Id is absent in form data, it is create new customer operation
+						method = "POST";
+						url = '/auth/login';
+						$scope.customerForm.password = calcMD5($scope.customerForm.password);
+						$http({
+							method: method,
+							url: url,
+							data: angular.toJson($scope.customerForm),
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						}).then(function successCallback(response) {
+							$scope.authInfo.isLogin = true;
+							$scope.authInfo.token = response.data.token;
+							$scope.authInfo.userid = response.data.userid;
+							console.log($scope.authInfo);
+							searchRanking();
+						}, function errorCallback(response) {
+							console.log(response.statusText);
+						});
+					}
                 };
 
                 $scope.locationLinkMove = function (url) {
                 	console.log(url);
                 	window.open(url);
 				}
-                /* Private Methods */
-                //HTTP GET- get all customers collection
+
                 $scope.searchLocation = function (searchKeyword) {
                     $http({
                         method : 'GET',
@@ -86,11 +89,13 @@
 							'Content-Type' : 'application/json',
 							'Authorization' : $scope.authInfo.token
 						},
-						params : {keyword : searchKeyword.keyword, page : $scope.bigCurrentPage, rowsPerPage : $scope.maxSize}
+						params : {keyword : searchKeyword.keyword, page : searchKeyword.page, rowsPerPage : searchKeyword.rowsPerPage}
                     }).then(function successCallback(response) {
 						$scope.locationInfos = response.data.locationInfoResultList;
 						$scope.bigTotalItems = response.data.pageInfo.totalCount;
-						console.log($scope.locationInfos);
+						$scope.bigCurrentPage = searchKeyword.page;
+						console.log(response.data);
+						searchRanking();
                     }, function errorCallback(response) {
                         console.log(response.statusText);
                     });
@@ -109,6 +114,22 @@
 						$scope.locationInfos = response.data.locationInfoResultList;
 						$scope.bigTotalItems = response.data.pageInfo.totalCount;
 						console.log($scope.locationInfos);
+					}, function errorCallback(response) {
+						console.log(response.statusText);
+					});
+				}
+
+				function searchRanking() {
+					$http({
+						method : 'GET',
+						url : 'http://localhost:5000/search/location/keyword/ranking',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Authorization' : $scope.authInfo.token
+						}
+					}).then(function successCallback(response) {
+						$scope.KeywordRankResults = response.data;
+						console.log($scope.KeywordRankResults);
 					}, function errorCallback(response) {
 						console.log(response.statusText);
 					});
@@ -212,7 +233,7 @@ td, th {
 				</tr>
 				<tr>
 					<td>사용자 비밀번호</td>
-					<td><input type="text" ng-model="customerForm.password" /></td>
+					<td><input type="password" ng-model="customerForm.password" /></td>
 				</tr>
 				<tr>
 					<td colspan="2"><input type="submit" value="로그인" class="blue-button" /></td>
@@ -221,16 +242,34 @@ td, th {
 		</form>
 	</div>
 	<div ng-show="authInfo.isLogin">
-		<h1>검색어</h1>
 		<table>
 			<tr>
-				<th colspan="2">로그인</th>
+				<th colspan="2">검색 키워드 순위</th>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<th>순위</th>
+				<th>키워드</th>
+				<th>검색 카운트</th>
+			</tr>
+			<tr ng-repeat="KeywordRankResult in KeywordRankResults">
+				<td>{{ $index + 1 }}</td>
+				<td>{{ KeywordRankResult.keyword }}</td>
+				<td>{{ KeywordRankResult.counting }}</td>
+			</tr>
+		</table>
+		<br><br>
+		<table>
+			<tr>
+				<th colspan="2">검색</th>
 			</tr>
 			<tr>
 				<td>검색어</td>
 				<td><input type="text" ng-model="searchKeyword.keyword" /> <button ng-click="searchLocation(searchKeyword)" class="blue-button">검색</button></td>
 			</tr>
 		</table>
+		<br><br>
 		<table>
 			<tr>
 				<th>장소명</th>
@@ -247,7 +286,7 @@ td, th {
 				<td><button ng-click="locationLinkMove(locationInfo.locationUrl)" class="red-button">이동</button></td>
 			</tr>
 		</table>
-		<ul uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" ng-change="pageChanged()" class="pagination-sm" boundary-links="true" force-ellipses="true"></ul>
+		<ul uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" ng-change="pageChanged()" class="pagination-sm" boundary-links="true" force-ellipses="true", ng-show="bigTotalItems > 0"></ul>
 	</div>
 </body>
 </html>

@@ -1,7 +1,6 @@
 package com.kakaobank.location.model;
 
 public enum ErrorCode {
-    SUCCESS,
     NOT_FOUND_ID,
     FAIL_PASSWORD,
     NOT_FOUND_ROLE,

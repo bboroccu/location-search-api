@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 public class KakaoLocationSearcher implements LocationSearcher {
     private static final String KAKAO_MAP_URL = "https://map.kakao.com/link/map/%s";
 
-    private LocationSearchApi locationSearchApi;
+    private LocationSearchApi<KakaoLocationSearchResponse> locationSearchApi;
 
     @Autowired
-    public KakaoLocationSearcher(LocationSearchApi locationSearchApi) {
+    public KakaoLocationSearcher(LocationSearchApi<KakaoLocationSearchResponse> locationSearchApi) {
         this.locationSearchApi = locationSearchApi;
     }
 
@@ -43,7 +43,7 @@ public class KakaoLocationSearcher implements LocationSearcher {
 
     private SearchKeywordResponse toSearchKeywordResponse(KakaoLocationSearchResponse kakaoLocationSearchResponse, Integer rowsPerPage) {
         List<LocationInfoResult> locationInfoResults = kakaoLocationSearchResponse.getDocuments().stream()
-                .map(kakaoLocationInfo -> toLocationInfoResult(kakaoLocationInfo))
+                .map(this::toLocationInfoResult)
                 .collect(Collectors.toList());
         int totalCount = kakaoLocationSearchResponse.getMeta().getTotalCount();
         int totalPage = CALC_TOTAL_PAGE.applyAsInt(totalCount, rowsPerPage);

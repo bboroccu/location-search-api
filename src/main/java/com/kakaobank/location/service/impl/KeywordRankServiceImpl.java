@@ -26,10 +26,9 @@ public class KeywordRankServiceImpl implements KeywordRankService {
 
     @Override
     public List<KeywordRankResult> getKeywordRanking() {
-        List<KeywordRankResult> list = keywordRankRepository.findTop10ByOrderByCountingDesc().stream()
+        return keywordRankRepository.findTop10ByOrderByCountingDesc().stream()
                 .map(this::toKeywordRankResult)
                 .collect(Collectors.toList());
-        return list;
     }
 
     private KeywordRankResult toKeywordRankResult(KeywordRank keywordRank) {
