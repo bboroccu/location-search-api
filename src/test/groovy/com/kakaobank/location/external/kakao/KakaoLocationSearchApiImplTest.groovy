@@ -8,7 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.http.client.ClientHttpRequest
+import org.springframework.http.client.ClientHttpResponse
 import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.test.web.client.ResponseCreator
 import org.springframework.web.util.UriComponentsBuilder
 import spock.lang.Specification
 
@@ -16,6 +19,7 @@ import spock.lang.Specification
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest
@@ -102,6 +106,34 @@ class KakaoLocationSearchApiImplTest extends Specification {
         assert result.get().getDocuments().size() == 2
     }
 
+    def "SearchKeyword, withNoContent"() {
+        given:
+        def request = KakaoLocationSearchKeywordRequest.builder()
+                .responseFormat("json")
+                .query("간석역")
+                .page(1)
+                .size(30)
+                .sort("accuracy")
+                .build()
+
+        def uri = UriComponentsBuilder.fromHttpUrl(hostProperties.getKakaoLocationApi() + "/v2/local/search/keyword.json")
+                .queryParam("query", request.getQuery())
+                .queryParam("page", request.getPage())
+                .queryParam("size", request.getSize())
+                .queryParam("sort", request.getSort())
+                .build().toUri();
+
+        server.expect(requestTo(uri))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withNoContent())
+
+        when:
+        Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
+
+        then:
+        assert result.isPresent() == false
+    }
+
     def "SearchKeyword, serverError"() {
         given:
         def request = KakaoLocationSearchKeywordRequest.builder()
@@ -178,6 +210,50 @@ class KakaoLocationSearchApiImplTest extends Specification {
         server.expect(requestTo(uri))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withUnauthorizedRequest())
+
+        when:
+        Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)
+
+        then:
+        assert result.isPresent() == false
+    }
+
+    static class TimeoutResponseCreator implements ResponseCreator {
+
+        @Override
+        ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
+            if (true) {
+                throw new SocketTimeoutException("Testing timeout exception")
+            }
+            return null
+        }
+
+        static TimeoutResponseCreator withTimeout() {
+            return new TimeoutResponseCreator()
+        }
+
+    }
+
+    def "SearchKeyword, timeout"() {
+        given:
+        def request = KakaoLocationSearchKeywordRequest.builder()
+                .responseFormat("json")
+                .query("간석역")
+                .page(1)
+                .size(30)
+                .sort("accuracy")
+                .build()
+
+        def uri = UriComponentsBuilder.fromHttpUrl(hostProperties.getKakaoLocationApi() + "/v2/local/search/keyword.json")
+                .queryParam("query", request.getQuery())
+                .queryParam("page", request.getPage())
+                .queryParam("size", request.getSize())
+                .queryParam("sort", request.getSort())
+                .build().toUri();
+
+        server.expect(requestTo(uri))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
         Optional<KakaoLocationSearchResponse> result = sut.searchKeyword(request)

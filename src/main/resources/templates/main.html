@@ -12,7 +12,7 @@
             var app = angular.module("CustomerManagement", ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
             //Controller Part
-            app.controller("CustomerController", function($scope, $http) {
+            app.controller("CustomerController", function($scope, $http, $timeout) {
                 $scope.locationInfos = [];
                 $scope.KeywordRankResults = [];
                 $scope.customerForm = {
@@ -45,9 +45,6 @@
 					_searchLocation($scope.searchKeyword)
 				};
 
-                //HTTP POST/PUT methods for add/edit customer 
-                // with the help of id, we are going to find out whether it is put or post operation
-                
                 $scope.login = function() {
          
                     var method = "";
@@ -69,12 +66,18 @@
 							$scope.authInfo.token = response.data.token;
 							$scope.authInfo.userid = response.data.userid;
 							console.log($scope.authInfo);
-							searchRanking();
+							rankingPoller();
 						}, function errorCallback(response) {
 							console.log(response.statusText);
 						});
 					}
                 };
+
+                var poller;
+				var rankingPoller = function() {
+					searchRanking();
+					poller = $timeout(rankingPoller, 5000);
+				};
 
                 $scope.locationLinkMove = function (url) {
                 	console.log(url);
@@ -132,6 +135,7 @@
 						console.log($scope.KeywordRankResults);
 					}, function errorCallback(response) {
 						console.log(response.statusText);
+						$timeout.cancel(poller);
 					});
 				}
                 //Clear the form
@@ -251,7 +255,7 @@ td, th {
 			<tr>
 				<th>순위</th>
 				<th>키워드</th>
-				<th>검색 카운트</th>
+				<th>검색 횟수</th>
 			</tr>
 			<tr ng-repeat="KeywordRankResult in KeywordRankResults">
 				<td>{{ $index + 1 }}</td>
