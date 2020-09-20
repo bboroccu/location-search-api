@@ -104,6 +104,10 @@ springBoot {
     buildInfo()
 }
 
+bootJar() {
+    archiveFileName = 'location-search-api.jar'
+}
+
 test {
     useJUnitPlatform()
 }

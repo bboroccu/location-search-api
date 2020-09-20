@@ -8,7 +8,13 @@
 
 ### 구동 방법
 1. https://github.com/bboroccu/location-search-api.git 에서 master branch 소스 다운
-2. java -Xms1g -Xmx1g -server -XX:+UseG1GC -XX:NewRatio=2 -Duser.timezone=Asia/Seoul -jar location-search-api-1.0.1-SNAPSHOT.jar
+2. 터미널로 다운로드한 폴더로 이동
+3. `gradle clean :bootJar` 명렁어 실행
+4. 완료되면 /build/libs 폴더로 이동
+5. location-search-api.jar 파일 존재 유무 확인 
+6. java -Xms1g -Xmx1g -server -XX:+UseG1GC -XX:NewRatio=2 -Duser.timezone=Asia/Seoul -jar location-search-api.jar 실행
+7. 웹브라우저에서 http://127.0.0.1:5000 이동
+8. 아이디 : bboroccu, password : 1234 로 로그인 후 키워드 검색이용
 
 ### 이슈
 - kakao 키워드 검색에서 검색 데이터의 meta의 `pageable_count` 와 `total_count`에 대한 설명부족으로 의미하는 부분에 대한 이해가 부족하여
