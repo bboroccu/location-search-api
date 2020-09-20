@@ -1,0 +1,313 @@
+
+<html>
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+	<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<script src="//lig-membres.imag.fr/donsez/cours/exemplescourstechnoweb/js_securehash/md5.js"></script>
+<title>Location Search Service</title>
+<script type="text/javascript">
+            var app = angular.module("CustomerManagement", ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+
+            //Controller Part
+            app.controller("CustomerController", function($scope, $http, $timeout) {
+                $scope.locationInfos = [];
+                $scope.KeywordRankResults = [];
+                $scope.customerForm = {
+                    userid : "",
+                    password : ""
+                };
+
+				$scope.authInfo = {
+					isLogin : false,
+					userid : "",
+					token : ""
+				}
+
+                $scope.searchKeyword = {
+                	keyword : "",
+					page : 1,
+					rowsPerPage: 10
+				};
+
+				$scope.bigTotalItems = 0;
+				$scope.bigCurrentPage = 0;
+				$scope.maxSize = 10;
+				$scope.itemsPerPage = 10;
+				$scope.setPage = function (pageNo) {
+					$scope.currentPage = pageNo;
+				};
+
+				$scope.pageChanged = function() {
+					console.log('Page changed to: ' + $scope.bigCurrentPage);
+					_searchLocation($scope.searchKeyword)
+				};
+
+                $scope.login = function() {
+         
+                    var method = "";
+                    var url = "";
+                    if ($scope.authInfo.isLogin == false) {
+						//Id is absent in form data, it is create new customer operation
+						method = "POST";
+						url = '/auth/login';
+						$scope.customerForm.password = calcMD5($scope.customerForm.password);
+						$http({
+							method: method,
+							url: url,
+							data: angular.toJson($scope.customerForm),
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						}).then(function successCallback(response) {
+							$scope.authInfo.isLogin = true;
+							$scope.authInfo.token = response.data.token;
+							$scope.authInfo.userid = response.data.userid;
+							console.log($scope.authInfo);
+							rankingPoller();
+						}, function errorCallback(response) {
+							console.log(response.statusText);
+						});
+					}
+                };
+
+                var poller;
+				var rankingPoller = function() {
+					searchRanking();
+					poller = $timeout(rankingPoller, 5000);
+				};
+
+                $scope.locationLinkMove = function (url) {
+                	console.log(url);
+                	window.open(url);
+				}
+
+                $scope.searchLocation = function (searchKeyword) {
+                    $http({
+                        method : 'GET',
+                        url : 'http://localhost:5000/search/location/keyword',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Authorization' : $scope.authInfo.token
+						},
+						params : {keyword : searchKeyword.keyword, page : searchKeyword.page, rowsPerPage : searchKeyword.rowsPerPage}
+                    }).then(function successCallback(response) {
+						$scope.locationInfos = response.data.locationInfoResultList;
+						$scope.bigTotalItems = response.data.pageInfo.totalCount;
+						$scope.bigCurrentPage = searchKeyword.page;
+						console.log(response.data);
+						searchRanking();
+                    }, function errorCallback(response) {
+                        console.log(response.statusText);
+                    });
+                }
+
+                function _searchLocation(searchKeyword) {
+					$http({
+						method : 'GET',
+						url : 'http://localhost:5000/search/location/keyword',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Authorization' : $scope.authInfo.token
+						},
+						params : {keyword : searchKeyword.keyword, page : $scope.bigCurrentPage, rowsPerPage : $scope.maxSize}
+					}).then(function successCallback(response) {
+						$scope.locationInfos = response.data.locationInfoResultList;
+						$scope.bigTotalItems = response.data.pageInfo.totalCount;
+						console.log($scope.locationInfos);
+					}, function errorCallback(response) {
+						console.log(response.statusText);
+					});
+				}
+
+				function searchRanking() {
+					$http({
+						method : 'GET',
+						url : 'http://localhost:5000/search/location/keyword/ranking',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Authorization' : $scope.authInfo.token
+						}
+					}).then(function successCallback(response) {
+						$scope.KeywordRankResults = response.data;
+						console.log($scope.KeywordRankResults);
+					}, function errorCallback(response) {
+						console.log(response.statusText);
+						$timeout.cancel(poller);
+					});
+				}
+            });
+        </script>
+<style>
+.blue-button {
+	background: #25A6E1;
+	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#25A6E1',
+		endColorstr='#188BC0', GradientType=0);
+	padding: 3px 5px;
+	color: #fff;
+	font-family: 'Helvetica Neue', sans-serif;
+	font-size: 12px;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #1A87B9
+}
+
+.red-button {
+	background: #CD5C5C;
+	padding: 3px 5px;
+	color: #fff;
+	font-family: 'Helvetica Neue', sans-serif;
+	font-size: 12px;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #CD5C5C
+}
+
+table {
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	width: 100%;
+}
+
+caption {
+	text-align: left;
+	color: silver;
+	font-weight: bold;
+	text-transform: uppercase;
+	padding: 5px;
+}
+
+th {
+	background: SteelBlue;
+	color: white;
+}
+
+tbody tr:nth-child(even) {
+	background: WhiteSmoke;
+}
+
+tbody tr td:nth-child(2) {
+	text-align: center;
+}
+
+tbody tr td:nth-child(3), tbody tr td:nth-child(4) {
+	text-align: center;
+	font-family: monospace;
+}
+
+tfoot {
+	background: SeaGreen;
+	color: white;
+	text-align: right;
+}
+
+tfoot tr th:last-child {
+	font-family: monospace;
+}
+
+td, th {
+	border: 1px solid gray;
+	width: 20%;
+	text-align: left;
+	padding: 5px 10px;
+}
+</style>
+<head>
+<body ng-app="CustomerManagement" ng-controller="CustomerController">
+	<div ng-show="!authInfo.isLogin">
+		<h1>장소 검색 서비스</h1>
+		<form ng-submit="login()">
+			<table>
+				<tr>
+					<th colspan="2">로그인</th>
+				</tr>
+				<tr>
+					<td>사용자 아이디</td>
+					<td><input type="text" ng-model="customerForm.userid" /></td>
+				</tr>
+				<tr>
+					<td>사용자 비밀번호</td>
+					<td><input type="password" ng-model="customerForm.password" /></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="submit" value="로그인" class="blue-button" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div ng-show="authInfo.isLogin">
+		<table>
+			<tr>
+				<th colspan="2">검색 키워드 순위</th>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<th>순위</th>
+				<th>키워드</th>
+				<th>검색 횟수</th>
+			</tr>
+			<tr ng-repeat="KeywordRankResult in KeywordRankResults">
+				<td>{{ $index + 1 }}</td>
+				<td>{{ KeywordRankResult.keyword }}</td>
+				<td>{{ KeywordRankResult.counting }}</td>
+			</tr>
+		</table>
+		<br><br>
+		<table>
+			<tr>
+				<th colspan="2">검색</th>
+			</tr>
+			<tr>
+				<td>검색어</td>
+				<td><input type="text" ng-model="searchKeyword.keyword" /> <button ng-click="searchLocation(searchKeyword)" class="blue-button">검색</button></td>
+			</tr>
+		</table>
+		<br><br>
+		<table>
+			<tr>
+				<th>장소명</th>
+				<th>지번</th>
+				<th>도로명</th>
+				<th>전화번호</th>
+				<th>지도로 이동</th>
+			</tr>
+			<tr ng-repeat="locationInfo in locationInfos">
+				<td>{{ locationInfo.placeName }}</td>
+				<td>{{ locationInfo.addressName }}</td>
+				<td>{{ locationInfo.roadAddressName }}</td>
+				<td>{{ locationInfo.phone }}</td>
+				<td><button ng-click="locationLinkMove(locationInfo.locationUrl)" class="red-button">이동</button></td>
+			</tr>
+		</table>
+		<ul uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" ng-change="pageChanged()" class="pagination-sm" boundary-links="true" force-ellipses="true", ng-show="bigTotalItems > 0"></ul>
+	</div>
+	<h2>Modal Example</h2>
+	<!-- Trigger the modal with a button -->
+	<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Modal Header</h4>
+				</div>
+				<div class="modal-body">
+					<p>Some text in the modal.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>

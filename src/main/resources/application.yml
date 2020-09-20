@@ -1,0 +1,41 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+  compression:
+    enabled: true
+    mime-types: application/json
+  port: 5000
+
+logging:
+  config: classpath:logback.xml
+
+spring:
+  profiles:
+    include:
+      - external-api
+  datasource:
+    driver-class-name: org.h2.Driver
+    jdbc-url: jdbc:h2:mem:location;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    username: sa
+    password:
+    poolName: master
+    maximum-pool-size: 3
+    minimum-idle: 3
+    max-lifetime: 57600
+    connection-timeout: 57600
+    idle-timeout: 30000
+    initialization-mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+security:
+  jwt:
+    tokenExpirationTime: 1440
+    refreshTokenExpTime: 2880
+    tokenIsuser: abc
+    tokenSigningKey: xm8EV6Hy5RMFK4EEACIDAwQus
