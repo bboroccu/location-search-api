@@ -19,7 +19,9 @@
 ### 이슈
 - kakao 키워드 검색에서 검색 데이터의 meta의 `pageable_count` 와 `total_count`에 대한 설명부족으로 의미하는 부분에 대한 이해가 부족하여
 page 처리에서 `pageable_count`를 사용했는데 `page` 파라미터를 변경하며 조회 요청을 하면 `pageable_count`가 동일한 값으로 내려오지 않아
-front-end 에서 pagination처리에 문제가 있습니다. 
+front-end 에서 pagination 처리에 문제가 있습니다. 
+- 현재 키워드 순위를 카운팅하기 위해 `ApplicationEventPublisher`를 사용하여 처리하고 있지만 서버를 여러대 구성하게 되면 
+카운팅에 대해 순서보장이 되지 않기 때문에 외부에 mq 서버나 kafka 로 순차처리 할 수 있는 queue 서버를 두고 처리해야 한다.
 
 ### 사용된 외부 라이브러리
 front-end

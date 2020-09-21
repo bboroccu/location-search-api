@@ -40,18 +40,23 @@ public class KeywordRankServiceImpl implements KeywordRankService {
     @Transactional
     @Override
     public void saveKeywordRanking(String keyword) {
-        Optional<KeywordRank> keywordRankOpt = keywordRankRepository.findByKeyword(keyword);
-        KeywordRank keywordRank = keywordRankOpt
-                .orElseGet(() -> {
-           KeywordRank newKeywordRank = new KeywordRank();
-           newKeywordRank.setKeyword(keyword);
-           newKeywordRank.setCounting(0);
-           newKeywordRank.setCreateAt(LocalDateTime.now());
-           return newKeywordRank;
-        });
-        keywordRank.setCounting(keywordRank.getCounting()+1);
-        keywordRank.setUpdateAt(LocalDateTime.now());
-        KeywordRank savedKeywordRank = keywordRankRepository.save(keywordRank);
-        log.warn("saved keywordRank : {}", savedKeywordRank);
+        try {
+            Optional<KeywordRank> keywordRankOpt = keywordRankRepository.findByKeyword(keyword);
+            KeywordRank keywordRank = keywordRankOpt
+                    .orElseGet(() -> {
+                        KeywordRank newKeywordRank = new KeywordRank();
+                        newKeywordRank.setKeyword(keyword);
+                        newKeywordRank.setCounting(0);
+                        newKeywordRank.setCreateAt(LocalDateTime.now());
+                        return newKeywordRank;
+                    });
+            keywordRank.setCounting(keywordRank.getCounting() + 1);
+            keywordRank.setUpdateAt(LocalDateTime.now());
+            KeywordRank savedKeywordRank = keywordRankRepository.save(keywordRank);
+            log.warn("saved keywordRank : {}", savedKeywordRank);
+        } catch (Exception ex) {
+            log.error("keyword : {}, message : {}", keyword, ex.getMessage(), ex);
+            throw ex;
+        }
     }
 }
