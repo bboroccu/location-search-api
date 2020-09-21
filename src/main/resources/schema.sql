@@ -6,7 +6,8 @@ CREATE TABLE users
     user_role varchar(255) not null,
     create_at timestamp,
     update_at timestamp,
-    primary key(seq)
+    primary key(seq),
+    unique key uk_userid (user_id)
 );
 
 CREATE INDEX idx_user_id ON users(user_id);
@@ -20,9 +21,8 @@ CREATE TABLE keyword_rank
     counting integer,
     create_at timestamp,
     update_at timestamp,
-    primary key(seq)
+    primary key(seq),
+    unique key uk_keyword (keyword)
 );
-
-CREATE INDEX idx_keyword ON keyword_rank(keyword);
 
 CREATE INDEX idx_counting_desc ON keyword_rank(counting DESC);
