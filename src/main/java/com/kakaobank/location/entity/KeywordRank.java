@@ -34,4 +34,7 @@ public class KeywordRank {
 
     @Column(name = "update_at")
     private LocalDateTime updateAt;
+
+    @Version
+    private int version;
 }

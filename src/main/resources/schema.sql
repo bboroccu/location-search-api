@@ -21,6 +21,7 @@ CREATE TABLE keyword_rank
     counting integer,
     create_at timestamp,
     update_at timestamp,
+    version integer,
     primary key(seq),
     unique key uk_keyword (keyword)
 );
